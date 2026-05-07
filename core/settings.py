@@ -36,6 +36,8 @@ AUTH_USER_MODEL='accounts.User'
 INSTALLED_APPS = [
     'rest_framework',
     'accounts.apps.AccountsConfig',
+    'skills.apps.SkillsConfig',
+    'connections.apps.ConnectionsConfig'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
