@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts.apps.AccountsConfig',
     'skills.apps.SkillsConfig',
-    'connections.apps.ConnectionsConfig'
+    'connections.apps.ConnectionsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
