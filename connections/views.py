@@ -3,6 +3,9 @@ from connections.models import ConnectionRequest
 from connections.serializers import ConnectionRequestSerializer, ConnectionResponseSerializer
 from rest_framework import generics, permissions
 from django.db.models import Q
+from accounts.models import Profile
+from accounts.serializers import ProfileSerializer
+from skills.models import UserSkill
 # Create your views here.
 
 class ListConnections(generics.ListAPIView):
@@ -57,6 +60,17 @@ class SentRequests(generics.ListAPIView):
     def get_queryset(self):
         profile=self.request.user
         return ConnectionRequest.objects.filter(sender=profile, connectionStatus="p")
+    
+class MatchingAlgo(generics.ListAPIView):
+    serializer_class=ProfileSerializer
+    def get_queryset(self):
+        profile=self.request.user
+        seeking_ids=UserSkill.objects.filter(user=profile,skill_type="s").values_list('skill', flat=True) 
+        eligible1=UserSkill.objects.filter(skill__in=seeking_ids, skill_type="o").values_list('user', flat=True)
+        offering_ids=UserSkill.objects.filter(user=profile, skill_type="o").values_list('skill', flat=True)
+        eligible2=UserSkill.objects.filter(skill__in=offering_ids, skill_type="s").values_list('user', flat=True)
+        find=UserSkill.objects.filter(user__in=eligible1).filter(user__in=eligible2).exclude(user=profile).values_list('user', flat=True)
+        return Profile.objects.filter(user__in=find).distinct()
 
 
 
