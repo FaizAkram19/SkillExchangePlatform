@@ -62,6 +62,16 @@ class SentRequests(generics.ListAPIView):
         return ConnectionRequest.objects.filter(sender=profile, connectionStatus="p")
     
 class MatchingAlgo(generics.ListAPIView):
+    """
+    This is the heart of this platform, first we get the list of skills the user is seeking.
+    Then we search for these specific skill values, where it is 
+    listed as offering in the entire UserSkill model instances.
+    If we find a match then we return the list of Users that are offering them.
+    We now do the same thing but reverse "offering" and "seeking".
+    In this way we find two possible list of users. We then find the intersections, i.e.,
+    they are offering what we are seeking AND also seeking what we are offering.
+    So we return the Profile of the users who satisfy these conditions simultaneously.
+    """
     serializer_class=ProfileSerializer
     def get_queryset(self):
         profile=self.request.user
