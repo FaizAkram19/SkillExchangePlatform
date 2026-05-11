@@ -51,6 +51,12 @@ class ResponseView(generics.UpdateAPIView):
     def get_queryset(self):
         profile=self.request.user
         return ConnectionRequest.objects.filter(receiver=profile, connectionStatus="p")
+    
+class SentRequests(generics.ListAPIView):
+    serializer_class=ConnectionRequestSerializer
+    def get_queryset(self):
+        profile=self.request.user
+        return ConnectionRequest.objects.filter(sender=profile, connectionStatus="p")
 
 
 
