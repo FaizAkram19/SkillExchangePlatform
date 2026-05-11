@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from connections.models import ConnectionRequest
-from connections.serializers import ConnectionRequestSerializer
+from connections.serializers import ConnectionRequestSerializer, ConnectionResponseSerializer
 from rest_framework import generics, permissions
 from django.db.models import Q
 # Create your views here.
@@ -32,13 +32,25 @@ class SendRequest(generics.CreateAPIView):
 class PendingConnections(generics.ListAPIView):
     serializer_class=ConnectionRequestSerializer
     def get_queryset(self):
-        profile=self.request.user
         """
         We can easily chain ANDed filter conditions using commas
         """
+        profile=self.request.user
         return ConnectionRequest.objects.filter(receiver=profile, connectionStatus="p")
     
+class PendingDetail(generics.RetrieveAPIView):
+    serializer_class=ConnectionRequestSerializer
 
+    def get_queryset(self):
+        profile=self.request.user
+        return ConnectionRequest.objects.filter(receiver=profile, connectionStatus="p")
+
+class ResponseView(generics.UpdateAPIView):
+    serializer_class=ConnectionResponseSerializer
+
+    def get_queryset(self):
+        profile=self.request.user
+        return ConnectionRequest.objects.filter(receiver=profile, connectionStatus="p")
 
 
 
