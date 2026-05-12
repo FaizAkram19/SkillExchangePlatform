@@ -9,6 +9,12 @@ class ConnectionRequestSerializer(serializers.ModelSerializer):
             "sender":{"read_only":True},
             "connectionStatus":{"read_only":True, "default":"p"}
         }
+    def validate(self, data):
+        sender = self.context['request'].user
+        receiver = data['receiver']
+        if ConnectionRequest.objects.filter(sender=sender, receiver=receiver).exists():
+            raise serializers.ValidationError("Connection request already exists.")
+        return data
 
 class ConnectionResponseSerializer(serializers.ModelSerializer):
     class Meta:

@@ -45,3 +45,9 @@ class ConnectionTests(APITestCase):
         data={"receiver": self.user3.id}
         response=self.client.post(reverse("connections:sentreq"), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_duplicate_requests(self):
+        data={"receiver": self.user3.id}
+        response1=self.client.post(reverse("connections:sentreq"), data, format='json')
+        response2=self.client.post(reverse("connections:sentreq"), data, format='json')
+        self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
