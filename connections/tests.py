@@ -61,7 +61,17 @@ class ConnectionTests(APITestCase):
     
     def test_PendingConnections(self):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer '+ str(self.tok2))
+        """
+        For pending request the receiver needs to be the one that is logged in.
+        """
         response=self.client.get(reverse("connections:penCon"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['receiver'], self.user2.id)
+    
+    def test_PendingDetail(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer "+ str(self.tok2))
+        response=self.client.get(reverse("connections:penDet", kwargs={'pk':self.cr.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['receiver'], self.user2.id)
+
