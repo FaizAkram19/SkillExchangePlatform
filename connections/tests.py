@@ -51,3 +51,17 @@ class ConnectionTests(APITestCase):
         response1=self.client.post(reverse("connections:sentreq"), data, format='json')
         response2=self.client.post(reverse("connections:sentreq"), data, format='json')
         self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_ListConnections(self):
+        ConnectionRequest.objects.create(sender=self.user, receiver=self.user3, connectionStatus="a")
+        response = self.client.get(reverse("connections:listcon"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['sender'], self.user.id)
+    
+    def test_PendingConnections(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer '+ str(self.tok2))
+        response=self.client.get(reverse("connections:penCon"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['receiver'], self.user2.id)
