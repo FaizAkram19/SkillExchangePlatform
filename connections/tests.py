@@ -75,3 +75,36 @@ class ConnectionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['receiver'], self.user2.id)
 
+    def test_SentRequests(self):
+        response=self.client.get(reverse("connections:sentReq"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['sender'], self.user.id)
+    
+    def test_AcceptRequest(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + str(self.tok2))
+        response=self.client.patch(reverse("connections:resp", kwargs={'pk':self.cr.id}), {'connectionStatus':"a"}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        """
+        The PATCH request hits the ResponseSerializer which updates the connectionStatus in the DB. 
+        So the DB record changes — but self.cr in your test is still the old in-memory Python object
+        from setUp, it doesn't automatically know the DB changed.
+        refresh_from_db() re-fetches that object from the DB and updates self.cr in memory to match. 
+        Without it, self.cr.connectionStatus would still show "p" even though the DB has "a".
+        """
+        self.cr.refresh_from_db()
+        self.assertEqual(self.cr.connectionStatus, "a")
+
+    def test_RejectRequest(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.tok2))
+        response=self.client.patch(reverse("connections:resp", kwargs={'pk':self.cr.id}), {'connectionStatus':"r"}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.cr.refresh_from_db()
+        self.assertEqual(self.cr.connectionStatus, "r")
+
+    def test_MatchingAlgo(self):
+        response=self.client.get(reverse("connections:matched"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['user']['username'], self.user2.username)
+
