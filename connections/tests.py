@@ -6,6 +6,8 @@ from accounts.models import User
 from skills.models import UserSkill, Skill
 from rest_framework_simplejwt.tokens import AccessToken
 from connections.models import ConnectionRequest
+from django.urls import reverse
+from rest_framework import status
 # Create your tests here.
 class ConnectionTests(APITestCase):
     def setUp(self):
@@ -28,6 +30,8 @@ class ConnectionTests(APITestCase):
         """
         self.user2= User.objects.create_user(username="ak", password="456admin")
         self.tok2=AccessToken.for_user(self.user2)
+        self.user3= User.objects.create_user(username="fzz", password="789admin")
+        self.tok3=AccessToken.for_user(self.user3)
         self.usk1a= UserSkill.objects.create(user=self.user, skill=self.sk1, skill_type="s")
         self.usk1b= UserSkill.objects.create(user=self.user, skill=self.sk2, skill_type="o")
         self.usk2a= UserSkill.objects.create(user=self.user2, skill=self.sk2, skill_type="s")
@@ -36,3 +40,8 @@ class ConnectionTests(APITestCase):
         """
         Set Up a connection between the 2 users.
         """
+
+    def test_SendRequest(self):
+        data={"receiver": self.user3.id}
+        response=self.client.post(reverse("connections:sentreq"), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
