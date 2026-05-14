@@ -19,10 +19,8 @@ class userProfile(generics.RetrieveUpdateAPIView):
     serializer_class=ProfileSerializer
     permission_classes=[permissions.IsAuthenticated]
     """
-    Since we only need the authenticated user's Profile and nothing else, we can't simply use
-    quesryset, since we need dynamic filtering as a different User will be making the request
-    each time. We need to override the get_quesryset method.
+    RetrieveUpdateAPIView expects a pk in the URL to look up a single object. But since you're always fetching the 
+    logged-in user's own profile, you don't need a pk at all — you need to override get_object instead.
     """
-    def get_queryset(self):
-        profile=self.request.user
-        return Profile.objects.filter(user=profile) # filter instead of get because get_queryset expects a queryset(duh)
+    def get_object(self):
+        return self.request.user.profile
