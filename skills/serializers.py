@@ -6,7 +6,7 @@ class SkillSerializer(serializers.ModelSerializer):
     # is_approved is read_only so that the user doesn't bypass it
     class Meta:
         model=Skill
-        fields=["name", "description", "is_approved"]
+        fields=["id","name", "description", "is_approved"]
     
 class UserSkillSerializer(serializers.ModelSerializer):
     skill=serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all())
