@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from accounts.models import User, Profile
+from skills.models import UserSkill
+from skills.serializers import UserSkillSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,12 +31,25 @@ class ProfileSerializer(serializers.ModelSerializer):
     user=UserSerializer(read_only=True)
     first_name = serializers.CharField(write_only=True, required=False)
     last_name = serializers.CharField(write_only=True, required=False)
+    skills_offering=serializers.SerializerMethodField()
+    skills_seeking=serializers.SerializerMethodField()
+
     class Meta:
         model=Profile
-        fields=["user","first_name", "last_name", "dp", "timezone", "availability", "rating"]
+        fields=["user","first_name", "last_name", "dp", "timezone", "availability", "rating", "skills_offering", "skills_seeking"]
         extra_kwargs={
             "rating":{'read_only':True}
         }
+
+    
+    def get_skills_offering(self, obj):
+        qs = UserSkill.objects.filter(user=obj.user, skill_type="o")
+        return UserSkillSerializer(qs, many=True).data
+
+    def get_skills_seeking(self, obj):
+        qs = UserSkill.objects.filter(user=obj.user, skill_type="s")
+        return UserSkillSerializer(qs, many=True).data
+
     def update(self, instance, validated_data):
         instance.user.first_name = validated_data.get("first_name", instance.user.first_name)
         instance.user.last_name = validated_data.get("last_name", instance.user.last_name)
