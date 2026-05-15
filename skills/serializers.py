@@ -12,7 +12,7 @@ class UserSkillSerializer(serializers.ModelSerializer):
     skill=serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all())
     class Meta:
         model=UserSkill
-        fields=["skill", "skill_type"]
+        fields=["id", "skill", "skill_type"]
         # no user in the fields cause it'll be automatically saved in the view
     def to_representation(self, instance):
         rep=super().to_representation(instance)

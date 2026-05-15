@@ -39,4 +39,9 @@ class SkillDetail(generics.DestroyAPIView):
     We overrode the get_queryset function because without it an authenticated user would be able to
     any user's skills. The should only be able to delete their own skills.
     """
-    
+class SkillList(generics.ListAPIView):
+    serializer_class=SkillSerializer
+    queryset= Skill.objects.filter(is_approved=True)
+
+class CreateSkill(generics.CreateAPIView):
+    serializer_class=SkillSerializer
