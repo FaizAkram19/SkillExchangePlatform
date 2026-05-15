@@ -4,10 +4,21 @@ from accounts.models import User, Profile
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-        fields=["username", "email", "first_name", "last_name", "password"]
+        fields=["id","username", "email", "first_name", "last_name", "password"]
+        extra_kwargs={
+            "password":{"write_only":True}
+        }
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
+
+class UserMiniSerializer(serializers.ModelSerializer):
+    """
+    This serializer only uses the fields that need to be displayed
+    """
+    class Meta:
+        model=User
+        fields=["id", "username", "first_name", "last_name"]
 
 class ProfileSerializer(serializers.ModelSerializer):
     # first_name and last_name are declared as explicit write_only fields on ProfileSerializer

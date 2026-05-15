@@ -9,5 +9,6 @@ urlpatterns=[
     path("connections/pending/<int:pk>/", views.PendingDetail.as_view(), name="penDet"),
     path("connections/<int:pk>/respond/", views.ResponseView.as_view(), name="resp"),
     path("connections/sent/", views.SentRequests.as_view(), name="sentReq"),
-    path("connections/suggestions/", views.MatchingAlgo.as_view(), name="matched")
+    path("connections/suggestions/", views.MatchingAlgo.as_view(), name="matched"),
+    path("connections/sent/<int:pk>/cancel/", views.CancelRequest.as_view(), name="cancel")
 ]

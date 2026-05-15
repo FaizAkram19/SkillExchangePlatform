@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from connections.models import ConnectionRequest
+from accounts.serializers import UserMiniSerializer
 
 class ConnectionRequestSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,3 +25,10 @@ class ConnectionResponseSerializer(serializers.ModelSerializer):
             "sender":{"read_only":True},
             "receiver":{"read_only":True}
         }
+
+class ConnectionListSerializer(serializers.ModelSerializer):
+    sender=UserMiniSerializer(read_only=True)
+    receiver=UserMiniSerializer(read_only=True)
+    class Meta:
+        model=ConnectionRequest
+        fields=["id", "sender", "receiver", "connectionStatus"]

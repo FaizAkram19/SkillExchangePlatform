@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from connections.models import ConnectionRequest
-from connections.serializers import ConnectionRequestSerializer, ConnectionResponseSerializer
+from connections.serializers import ConnectionRequestSerializer, ConnectionResponseSerializer, ConnectionListSerializer
 from rest_framework import generics, permissions
 from django.db.models import Q
 from accounts.models import Profile
@@ -9,7 +9,7 @@ from skills.models import UserSkill
 # Create your views here.
 
 class ListConnections(generics.ListAPIView):
-    serializer_class=ConnectionRequestSerializer
+    serializer_class=ConnectionListSerializer
 
     def get_queryset(self):
         """
@@ -33,7 +33,7 @@ class SendRequest(generics.CreateAPIView):
         serializer.save(sender=self.request.user)
 
 class PendingConnections(generics.ListAPIView):
-    serializer_class=ConnectionRequestSerializer
+    serializer_class=ConnectionListSerializer
     def get_queryset(self):
         """
         We can easily chain ANDed filter conditions using commas
@@ -56,7 +56,7 @@ class ResponseView(generics.UpdateAPIView):
         return ConnectionRequest.objects.filter(receiver=profile, connectionStatus="p")
     
 class SentRequests(generics.ListAPIView):
-    serializer_class=ConnectionRequestSerializer
+    serializer_class=ConnectionListSerializer
     def get_queryset(self):
         profile=self.request.user
         return ConnectionRequest.objects.filter(sender=profile, connectionStatus="p")
@@ -81,6 +81,11 @@ class MatchingAlgo(generics.ListAPIView):
         eligible2=UserSkill.objects.filter(skill__in=offering_ids, skill_type="s").values_list('user', flat=True)
         find=UserSkill.objects.filter(user__in=eligible1).filter(user__in=eligible2).exclude(user=profile).values_list('user', flat=True)
         return Profile.objects.filter(user__in=find).distinct()
+    
+class CancelRequest(generics.DestroyAPIView):
+    def get_queryset(self):
+        profile=self.request.user
+        return ConnectionRequest.objects.filter(sender=profile, connectionStatus="p")
 
 
 
