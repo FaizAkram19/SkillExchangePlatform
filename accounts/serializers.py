@@ -42,6 +42,14 @@ class ProfileSerializer(serializers.ModelSerializer):
         }
 
     
+
+    #In Django REST Framework (DRF), serializers.SerializerMethodField is a read-only field that allows 
+    #you to calculate or fetch data dynamically instead of just pulling a raw value straight from a database column.
+    #Think of it as a way to create a custom, calculated field on your API response.
+    #By default, DRF looks for a method on the serializer class itself to populate the field's data. 
+    #That method must follow a strict naming convention: get_<field_name>.
+
+
     def get_skills_offering(self, obj):
         qs = UserSkill.objects.filter(user=obj.user, skill_type="o")
         return UserSkillSerializer(qs, many=True).data
