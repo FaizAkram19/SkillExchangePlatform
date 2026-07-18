@@ -2,11 +2,14 @@ from rest_framework import serializers
 from skills.models import Skill, UserSkill
 
 class SkillSerializer(serializers.ModelSerializer):
-    is_approved=serializers.BooleanField(read_only=True)
-    # is_approved is read_only so that the user doesn't bypass it
+    
     class Meta:
         model=Skill
         fields=["id","name", "description", "is_approved"]
+        # is_approved is read_only so that the user doesn't bypass it
+        extra_kwargs={
+            "is_approved":{'read_only':True}
+        }
     
 class UserSkillSerializer(serializers.ModelSerializer):
     skill=serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all())
