@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 from decouple import config 
 from datetime import timedelta
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1, localhost').split(',')
 
 AUTH_USER_MODEL='accounts.User'
 
@@ -49,7 +50,13 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    #in middleware order matters alot, so if something is towards the top then it is intended
+    #every request passes through top to bottom
     'corsheaders.middleware.CorsMiddleware',
+
+    #whitenoise must sit high so that it can immediately answer static file related queries
+
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -87,14 +94,13 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    #looks for an environment variable named DATABASE_URL. Render sets that automatically.
+    'default': dj_database_url.config(
+        #local fallback
+        default=f"postgresql://{config('DB_USER')}:{config('DB_PASSWORD')}@localhost:5432/{config('DB_NAME')}",
+        #reuses database connections for 10 minutes instead of opening a new one per request
+        conn_max_age=600,
+    )
 }
 
 
@@ -133,6 +139,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
 
 REST_FRAMEWORK={
     'DEFAULT_AUTHENTICATION_CLASSES': (
