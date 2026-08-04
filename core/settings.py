@@ -96,7 +96,7 @@ DATABASES = {
     #looks for an environment variable named DATABASE_URL. Render sets that automatically.
     'default': dj_database_url.config(
         #local fallback
-        default=f"postgresql://{config('DB_USER')}:{config('DB_PASSWORD')}@localhost:5432/{config('DB_NAME')}",
+        default=config('LOCAL_DATABASE_URL', default='postgres://localhost/skillexchange'),
         #reuses database connections for 10 minutes instead of opening a new one per request
         conn_max_age=600,
     )
