@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from accounts.models import Profile, User
 from rest_framework import generics
-from accounts.serializers import ProfileSerializer, UserSerializer
-from rest_framework import permissions
+from accounts.serializers import ProfileSerializer, UserSerializer, PasswordChangeSerializer
+from rest_framework import permissions, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 # Create your views here.
 
 class createUser(generics.CreateAPIView):
@@ -24,3 +26,20 @@ class userProfile(generics.RetrieveUpdateAPIView):
     """
     def get_object(self):
         return self.request.user.profile
+
+class changePassword(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer=PasswordChangeSerializer(
+            data=request.data,
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
+
+        user=request.user
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+

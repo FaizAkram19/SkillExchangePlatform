@@ -3,6 +3,7 @@ from accounts.models import User, Profile
 from skills.models import UserSkill
 from skills.serializers import UserSkillSerializer
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
@@ -67,3 +68,23 @@ class ProfileSerializer(serializers.ModelSerializer):
         instance.availability=validated_data.get("availability", instance.availability)
         instance.save()
         return instance
+
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.contrib.auth.password_validation import validate_password
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password=serializers.CharField(required=True, write_only=True)
+    new_password=serializers.CharField(required=True, write_only=True)
+
+    def validate_old_password(self, value):
+        user=self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Password is incorrect")
+        return value
+
+    def validate_new_password(self, value):
+        try:
+            validate_password(value)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(list(e.messages))
+        return value
