@@ -4,9 +4,9 @@ A REST API for a peer-to-peer skill exchange platform, where users list the
 skills they can teach and the skills they want to learn, and are matched with
 people whose needs mirror their own.
 
-**Live API:** https://skillexchange-api-tg37.onrender.com
-**Live app:** https://skill-exchange-frontend-eight.vercel.app
-**Frontend repo:** https://github.com/FaizAkram19/SkillExchangeFrontend.git
+- **Live app:** https://skill-exchange-frontend-eight.vercel.app
+- **Live API:** https://skillexchange-api-tg37.onrender.com
+- **Frontend repo:** https://github.com/FaizAkram19/SkillExchangeFrontend
 
 > Hosted on a free tier that sleeps when idle — the first request after a period
 > of inactivity takes around a minute.
