@@ -5,7 +5,7 @@ skills they can teach and the skills they want to learn, and are matched with
 people whose needs mirror their own.
 
 - **Live app:** https://skill-exchange-frontend-eight.vercel.app
-- **Live API:** https://skillexchange-api-tg37.onrender.com
+- **API:** `https://skillexchange-api-tg37.onrender.com/api/` — requires a Bearer token
 - **Frontend repo:** https://github.com/FaizAkram19/SkillExchangeFrontend
 
 > Hosted on a free tier that sleeps when idle — the first request after a period
