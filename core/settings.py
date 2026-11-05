@@ -99,6 +99,7 @@ DATABASES = {
         default=config('LOCAL_DATABASE_URL', default='postgres://localhost/skillexchange'),
         #reuses database connections for 10 minutes instead of opening a new one per request
         conn_max_age=600,
+        conn_health_checks=True,
     )
 }
 
